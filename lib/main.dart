@@ -91,6 +91,18 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               await stopKioskMode();
               exit(0);
             },
+            title: Column(
+              children: [
+                Text('Please enter your passcode'),
+                Text('Your can send pass code to your email if you forgot it.'),
+              ],
+            ),
+            footer: Text('Forgot passcode?'),
+            screenLockConfig: lock.ScreenLockConfig(
+              backgroundColor: Colors.transparent,
+              textStyle: TextStyle(fontSize: 12),
+              titleTextStyle: TextStyle(fontSize: 16),
+            ),
           );
 
           return false;
