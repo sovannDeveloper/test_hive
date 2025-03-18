@@ -9,7 +9,11 @@ import 'package:test_hive/hive/message.dart';
 import 'package:test_hive/hive/person.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart' as lock;
 import 'package:kiosk_mode/kiosk_mode.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:local_auth/local_auth.dart';
 
+import 'mail.dart';
 import 'person_screen.dart';
 
 const darkModeBox = 'darkModeTutorial';
@@ -36,6 +40,7 @@ class MyApp extends StatelessWidget {
 
           return MaterialApp(
             themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
+            debugShowCheckedModeBanner: false,
             darkTheme: ThemeData.dark(),
             title: 'Flutter Demo',
             theme: ThemeData(useMaterial3: false),
@@ -70,7 +75,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('------------------- $state');
     if (state == AppLifecycleState.paused) {
       // DevicePolicyManager.lockNow();
     }
@@ -134,6 +138,45 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              ElevatedButton(
+                  onPressed: () async {
+                    final LocalAuthentication auth = LocalAuthentication();
+                    final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+                    final bool canAuthenticate =
+                        canAuthenticateWithBiometrics || await auth.isDeviceSupported();
+
+                    if (canAuthenticate) {
+                      try {
+                        final bool didAuthenticate = await auth.authenticate(
+                            localizedReason: 'Please authenticate to show account balance');
+                        print('Success $didAuthenticate');
+                      } on PlatformException catch (e) {
+                        print('Error $e');
+                      }
+                    }
+                  },
+                  child: const Text('Test Fingure')),
+              ElevatedButton(
+                  onPressed: () async {
+                    const url =
+                        "market://com.domain.acledabankqr/app?partner_id=ACD&payment_data=6eW69zewz5CmhRpgG99cXI9CMcWacledabankSecurityTCKHGgVpwq6+wjBqyd2t5Z8auEsgflwRnQ4vXUKaeqJhKYJ5JEjJNNNBzGTmYtaJqAbYv+eJTwfsrah9Ux+u0fO2OXXD2oHxYdFpFIiiV+tTQ89O9z6e1HucUqW771NKb0H1z242L5C7ap+X1eNOPotLiEAq3acledabankSecurityTCjxGJzd1TuTwQiRlkbtjRtMtslirdtQIgZFX4oJgtXBbLoTJwFX+xkxrMHZDtVmFL7uNgX2VQwBDFF7eif1ZSha3NgAvnvyQPacledabankSecurityTCPnHY0aeK+iz9YaQ2PZE9XaMhtz8nfLCzHMS2Ajkp0XgbDILVGIz+6EN0P1IkbqCkULpPgIlFF3+acledabankSecurityTCKdDBhytxh6PyacledabankSecurityTCacledabankSecurityTCZB6cUSjJ9Vxa5NyKRSN0Du6wVwmJYugpfSC8vk+cWAOgGja3p34Y14w00ftLacledabankSecurityTCrOoF18dWSHBACjUzHmhMF8e07jX8GVu2sIpTQ2iLI6LPYuSNDc4uqL1Iwn3GvdgS6vWUuudo8YuK9fJi6zJ0yIK12VDYyzQaT9sceTWwQ+zHwdACnhIMI1bXa9D6YLWCRQgt4QhtWMVLI3NX8ghoB+tF1A907DAjlnc0LcjKxwpuXdcWTbRt4ReofNeDfsOVOrbls+bW+LOdGlDCmNhJCbY9jbihihjVWjErESltxObfTqmzeeqO4uFCWb4ktC1Ikn2dbmq5hRdpKjPgnMlpvPpeitRmSk6Sdx8NYBCzGf+fIbVcTzYXBVlvKkvVjoNWcIwPncZM6xyMcbfl";
+
+                    final abc =
+                        await launchUrlString(url, mode: LaunchMode.externalNonBrowserApplication);
+                    print(abc);
+                  },
+                  child: Text('Open Deeplink Acd')),
+              ElevatedButton(
+                onPressed: () async {
+                  final emailService = EmailService();
+
+                  await emailService.sendEmail(
+                      toEmail: 'choubsovann@gmail.com',
+                      subject: 'Welcome to Our App',
+                      body: 'Thank you for joining our platform!');
+                },
+                child: const Text('Send mail'),
+              ),
               const Text(
                 'You have pushed the button this many times:',
               ),

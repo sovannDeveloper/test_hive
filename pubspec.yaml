@@ -20,9 +20,18 @@ dependencies:
   kiosk_mode:
     git:
       url: https://github.com/sovannDeveloper/kiosk_mode.git
+  flutter_email_sender: ^7.0.0
+  mailer: ^6.4.1
+  url_launcher: ^6.1.14
+  local_auth: ^2.1.8
+  objectbox: ^4.1.0
+  objectbox_flutter_libs: ^4.1.0
+  path_provider: ^2.1.2
+  faker: ^2.2.0
 
 dev_dependencies:
   hive_generator:
+  objectbox_generator:
   build_runner:
   freezed:
   json_serializable:
