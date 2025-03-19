@@ -43,14 +43,18 @@ class _TaskListScreenState extends State<TaskListScreen> {
   final fake = Faker();
   late Box<Task> taskBox;
   late Stream<Query<Task>> queryStream;
+  bool val = false;
+  bool sort = false;
 
   @override
   void initState() {
     super.initState();
-    taskBox = store.box<Task>();
 
-    final query = taskBox.query().watch(triggerImmediately: true);
-    queryStream = query;
+    taskBox = store.box<Task>();
+    queryStream = taskBox
+        .query(Task_.isCompleted.equals(val))
+        .order(Task_.id, flags: sort ? Order.descending : Order.caseSensitive)
+        .watch(triggerImmediately: true);
   }
 
   @override
@@ -59,6 +63,28 @@ class _TaskListScreenState extends State<TaskListScreen> {
       appBar: AppBar(
         title: Text('Task Manager'),
         actions: [
+          Switch(
+            value: val,
+            onChanged: (value) {
+              val = value;
+              queryStream = taskBox
+                  .query(Task_.isCompleted.equals(val))
+                  .order(Task_.id, flags: sort ? Order.descending : Order.caseSensitive)
+                  .watch(triggerImmediately: true);
+              setState(() {});
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.sort),
+            onPressed: () {
+              sort = !sort;
+              queryStream = taskBox
+                  .query(Task_.isCompleted.equals(val))
+                  .order(Task_.id, flags: sort ? Order.descending : Order.caseSensitive)
+                  .watch(triggerImmediately: true);
+              setState(() {});
+            },
+          ),
           IconButton(
             icon: Icon(Icons.delete_forever),
             onPressed: () {
@@ -94,7 +120,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   },
                 ),
                 title: Text(
-                  task.title,
+                  '${task.id} - ${task.title}',
                   style: TextStyle(
                     decoration: task.isCompleted ? TextDecoration.lineThrough : null,
                   ),
@@ -123,12 +149,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
             backgroundColor: Colors.amber,
             onPressed: () {
               // Add a random task
-              final task = Task(
-                title: fake.person.name(),
-                description: fake.lorem.sentence(),
-                isCompleted: false,
-              );
-              taskBox.put(task);
+              for (int i = 0; i < 100; i++) {
+                final task = Task(
+                  title: fake.person.name(),
+                  description: fake.lorem.sentence(),
+                  isCompleted: true,
+                );
+                taskBox.put(task);
+              }
             },
           ),
         ],

@@ -14,6 +14,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:local_auth/local_auth.dart';
 
 import 'mail.dart';
+import 'object_box/ob.dart';
 import 'person_screen.dart';
 
 const darkModeBox = 'darkModeTutorial';
@@ -21,6 +22,7 @@ const darkModeBox = 'darkModeTutorial';
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox(darkModeBox);
+  await OCBox.init();
   Hive.registerAdapter(PersonAdapter());
   Hive.registerAdapter(MessageAdapter());
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
